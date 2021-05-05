@@ -62,20 +62,19 @@ async def evaluateJs(event):
     if not event.out and not is_fullsudo(event.sender_id):
         return await eor(event, "`This Command Is Sudo Restricted.`")
     if Redis("I_DEV") != "True":
-        await eor(
+        return await eor(
             event,
             f"Developer Restricted!\nIf you know what this does, and want to proceed\n\n`{HNDLR}setredis I_DEV True`\n\nThis Might Be Dangerous.",
         )
-        return
     xx = await eor(event, "`Running Thread ...`")
     try:
         cmd = event.text.split(" ", maxsplit=1)[1]
     except IndexError:
-        return await eod(xx, "`Give some JS command`", time=7)
+        return await eod(xx, "`Give some JS command`", time=5)
     if cmd and cmd != "":
         Thread(
             target=await evalJs(
-                event,
+                xx,
                 command=cmd,
                 startTime=start,
             )
