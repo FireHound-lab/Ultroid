@@ -33,6 +33,9 @@ ultroid_version = "v0.0.6"
 OWNER_NAME = ultroid_bot.me.first_name
 OWNER_ID = ultroid_bot.me.id
 
+LIST = []
+DICT = {}
+N = 0
 
 def grt(seconds: int) -> str:
     count = 0
