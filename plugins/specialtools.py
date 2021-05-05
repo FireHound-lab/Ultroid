@@ -105,9 +105,10 @@ async def hbd(event):
     abhi = dt.now(zn)
     n = event.text
     q = n[5:]
-    p = n[5:7]
-    r = n[8:10]
-    s = n[11:]
+    kk = q.split("/")
+    p = kk[0]
+    r = kk[1]
+    s = kk[2]
     day = int(p)
     month = r
     paida = q
