@@ -45,16 +45,17 @@ async def mi(e):
             taime,
             f"`**[{xx}]({url})**\n\n`Loading More...",
         )
+        naam = dl.name
     else:
-        dl.name = await ultroid_bot.download_media(r.media)
-    out, er = await bash(f"mediainfo '{dl.name}' --Output=HTML")
+        naam = await ultroid_bot.download_media(r.media)
+    out, er = await bash(f"mediainfo '{naam}' --Output=HTML")
     urll = make_html_telegraph("Mediainfo", "Ultroid", out)
     if er:
         return await ee.edit(f"**[{xx}]({url})**", link_preview=False)
     await ee.edit(
         f"**[{xx}]({url})**\n\n[More Explained Info]({urll})", link_preview=False
     )
-    os.remove(dl.name)
+    os.remove(naam)
 
 
 HELP.update({f"{__name__.split('.')[1]}": f"{__doc__.format(i=HNDLR)}"})
