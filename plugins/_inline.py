@@ -25,8 +25,7 @@ notmine = f"This bot is for {OWNER_NAME}"
 ULTROID_PIC = "https://telegra.ph/file/031957757a4f6a5191040.jpg"
 helps = get_string("inline_1")
 
-add_ons = udB.get("ADDONS")
-if add_ons:
+if add_ons := udB.get("ADDONS"):
     zhelps = get_string("inline_2")
 else:
     zhelps = get_string("inline_3")
@@ -39,7 +38,7 @@ async def e(o):
     if len(o.text) == 0:
         b = o.builder
         uptime = grt(time.time() - start_time)
-        header = udB.get("ALIVE_TEXT") if udB.get("ALIVE_TEXT") else "Hey,  I am alive."
+        header = udB.get("ALIVE_TEXT") or "Hey,  I am alive."
         ALIVEMSG = get_string("alive_1").format(
             header,
             OWNER_NAME,
@@ -68,7 +67,7 @@ async def e(o):
                 ],
             ),
         ]
-        await o.answer(res, switch_pm=f"👥 ULTROID PORTAL", switch_pm_param="start")
+        await o.answer(res, switch_pm='👥 ULTROID PORTAL', switch_pm_param="start")
 
 
 if Var.BOT_USERNAME is not None and asst is not None:
@@ -76,65 +75,63 @@ if Var.BOT_USERNAME is not None and asst is not None:
     @inline
     @in_owner
     async def inline_handler(event):
-        builder = event.builder
         result = None
-        query = event.text
-        if event.query.user_id in sed and query.startswith("ultd"):
-            z = []
-            for x in LIST.values():
-                for y in x:
-                    z.append(y)
-            cmd = len(z) + 10
-            bn = Var.BOT_USERNAME
-            if bn.startswith("@"):
-                bnn = bn.replace("@", "")
-            else:
-                bnn = bn
-            result = builder.article(
-                title="Help Menu",
-                description="Help Menu - UserBot | Telethon ",
-                url="https://t.me/TheUltroid",
-                thumb=InputWebDocument(ULTROID_PIC, 0, "image/jpeg", []),
-                text=get_string("inline_4").format(
-                    OWNER_NAME,
-                    len(PLUGINS) - 5,
-                    len(ADDONS),
-                    cmd,
-                ),
-                buttons=[
-                    [
-                        Button.inline("• Pʟᴜɢɪɴs", data="hrrrr"),
-                        Button.inline("• Aᴅᴅᴏɴs", data="frrr"),
+        if event.query.user_id in sed:
+            builder = event.builder
+            query = event.text
+            if query.startswith("ultd"):
+                z = []
+                for x in LIST.values():
+                    for y in x:
+                        z.append(y)
+                cmd = len(z) + 10
+                bn = Var.BOT_USERNAME
+                bnn = bn.replace("@", "") if bn.startswith("@") else bn
+                result = builder.article(
+                    title="Help Menu",
+                    description="Help Menu - UserBot | Telethon ",
+                    url="https://t.me/TheUltroid",
+                    thumb=InputWebDocument(ULTROID_PIC, 0, "image/jpeg", []),
+                    text=get_string("inline_4").format(
+                        OWNER_NAME,
+                        len(PLUGINS) - 5,
+                        len(ADDONS),
+                        cmd,
+                    ),
+                    buttons=[
+                        [
+                            Button.inline("• Pʟᴜɢɪɴs", data="hrrrr"),
+                            Button.inline("• Aᴅᴅᴏɴs", data="frrr"),
+                        ],
+                        [
+                            Button.inline("Oᴡɴᴇʀ•ᴛᴏᴏʟꜱ", data="ownr"),
+                            Button.inline("Iɴʟɪɴᴇ•Pʟᴜɢɪɴs", data="inlone"),
+                        ],
+                        [
+                            Button.url(
+                                "⚙️Sᴇᴛᴛɪɴɢs⚙️",
+                                url=f"https://t.me/{bnn}?start=set",
+                            ),
+                        ],
+                        [Button.inline("••Cʟᴏꜱᴇ••", data="close")],
                     ],
-                    [
-                        Button.inline("Oᴡɴᴇʀ•ᴛᴏᴏʟꜱ", data="ownr"),
-                        Button.inline("Iɴʟɪɴᴇ•Pʟᴜɢɪɴs", data="inlone"),
+                )
+                await event.answer([result] if result else None)
+            elif query.startswith("paste"):
+                ok = query.split("-")[1]
+                link = f"https://nekobin.com/{ok}"
+                link_raw = f"https://nekobin.com/raw/{ok}"
+                result = builder.article(
+                    title="Paste",
+                    text="Pᴀsᴛᴇᴅ Tᴏ Nᴇᴋᴏʙɪɴ!",
+                    buttons=[
+                        [
+                            Button.url("NekoBin", url=f"{link}"),
+                            Button.url("Raw", url=f"{link_raw}"),
+                        ],
                     ],
-                    [
-                        Button.url(
-                            "⚙️Sᴇᴛᴛɪɴɢs⚙️",
-                            url=f"https://t.me/{bnn}?start=set",
-                        ),
-                    ],
-                    [Button.inline("••Cʟᴏꜱᴇ••", data="close")],
-                ],
-            )
-            await event.answer([result] if result else None)
-        elif event.query.user_id in sed and query.startswith("paste"):
-            ok = query.split("-")[1]
-            link = f"https://nekobin.com/{ok}"
-            link_raw = f"https://nekobin.com/raw/{ok}"
-            result = builder.article(
-                title="Paste",
-                text="Pᴀsᴛᴇᴅ Tᴏ Nᴇᴋᴏʙɪɴ!",
-                buttons=[
-                    [
-                        Button.url("NekoBin", url=f"{link}"),
-                        Button.url("Raw", url=f"{link_raw}"),
-                    ],
-                ],
-            )
-            await event.answer([result] if result else None)
+                )
+                await event.answer([result] if result else None)
 
     @inline
     @in_owner
@@ -326,10 +323,7 @@ if Var.BOT_USERNAME is not None and asst is not None:
     @owner
     async def opner(event):
         bn = Var.BOT_USERNAME
-        if bn.startswith("@"):
-            bnn = bn.replace("@", "")
-        else:
-            bnn = bn
+        bnn = bn.replace("@", "") if bn.startswith("@") else bn
         buttons = [
             [
                 Button.inline("• Pʟᴜɢɪɴs ", data="hrrrr"),
@@ -459,19 +453,13 @@ if Var.BOT_USERNAME is not None and asst is not None:
 
 
 def paginate_help(page_number, loaded_plugins, prefix):
-    number_of_rows = 5
-    number_of_cols = 2
-    emoji = Redis("EMOJI_IN_HELP")
-    if emoji:
-        multi, mult2i = emoji, emoji
-    else:
-        multi, mult2i = "✘", "✘"
-    helpable_plugins = []
+    multi, mult2i = (
+        (emoji, emoji) if (emoji := Redis("EMOJI_IN_HELP")) else ("✘", "✘")
+    )
+
     global upage
     upage = page_number
-    for p in loaded_plugins:
-        if not p.startswith("_"):
-            helpable_plugins.append(p)
+    helpable_plugins = [p for p in loaded_plugins if not p.startswith("_")]
     helpable_plugins = sorted(helpable_plugins)
     modules = [
         Button.inline(
@@ -484,9 +472,11 @@ def paginate_help(page_number, loaded_plugins, prefix):
         )
         for x in helpable_plugins
     ]
+    number_of_cols = 2
     pairs = list(zip(modules[::number_of_cols], modules[1::number_of_cols]))
     if len(modules) % number_of_cols == 1:
         pairs.append((modules[-1],))
+    number_of_rows = 5
     max_num_pages = ceil(len(pairs) / number_of_rows)
     modulo_page = page_number % max_num_pages
     if len(pairs) > number_of_rows:
@@ -513,19 +503,13 @@ def paginate_help(page_number, loaded_plugins, prefix):
 
 
 def paginate_addon(page_number, loaded_plugins, prefix):
-    number_of_rows = 5
-    number_of_cols = 2
-    emoji = Redis("EMOJI_IN_HELP")
-    if emoji:
-        multi, mult2i = emoji, emoji
-    else:
-        multi, mult2i = "✘", "✘"
-    helpable_plugins = []
+    multi, mult2i = (
+        (emoji, emoji) if (emoji := Redis("EMOJI_IN_HELP")) else ("✘", "✘")
+    )
+
     global addpage
     addpage = page_number
-    for p in loaded_plugins:
-        if not p.startswith("_"):
-            helpable_plugins.append(p)
+    helpable_plugins = [p for p in loaded_plugins if not p.startswith("_")]
     helpable_plugins = sorted(helpable_plugins)
     modules = [
         Button.inline(
@@ -538,9 +522,11 @@ def paginate_addon(page_number, loaded_plugins, prefix):
         )
         for x in helpable_plugins
     ]
+    number_of_cols = 2
     pairs = list(zip(modules[::number_of_cols], modules[1::number_of_cols]))
     if len(modules) % number_of_cols == 1:
         pairs.append((modules[-1],))
+    number_of_rows = 5
     max_num_pages = ceil(len(pairs) / number_of_rows)
     modulo_page = page_number % max_num_pages
     if len(pairs) > number_of_rows:

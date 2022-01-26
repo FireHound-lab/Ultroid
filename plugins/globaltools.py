@@ -54,7 +54,7 @@ async def _(e):
             try:
                 userid = (await e.client.get_entity(str(e.pattern_match.group(1)))).id
             except ValueError as err:
-                return await eod(xx, f"{str(err)}", time=5)
+                return await eod(xx, f'{err}', time=5)
     else:
         return await eod(xx, "`Reply to some msg or add their id.`", time=5)
     name = (await e.client.get_entity(userid)).first_name
@@ -93,7 +93,7 @@ async def _(e):
             try:
                 userid = (await e.client.get_entity(str(e.pattern_match.group(1)))).id
             except ValueError as err:
-                return await eod(xx, f"{str(err)}", time=5)
+                return await eod(xx, f'{err}', time=5)
     else:
         return await eod(xx, "`Reply to some msg or add their id.`", tome=5)
     name = (await e.client.get_entity(userid)).first_name
@@ -186,7 +186,7 @@ async def gkick(e):
             try:
                 userid = (await e.client.get_entity(str(e.pattern_match.group(1)))).id
             except ValueError as err:
-                return await eod(xx, f"{str(err)}", time=5)
+                return await eod(xx, f'{err}', time=5)
     else:
         return await eod(xx, "`Reply to some msg or add their id.`", time=5)
     name = (await e.client.get_entity(userid)).first_name
@@ -224,7 +224,7 @@ async def _(e):
             try:
                 userid = (await e.client.get_entity(str(e.pattern_match.group(1)))).id
             except ValueError as err:
-                return await eod(xx, f"{str(err)}", time=5)
+                return await eod(xx, f'{err}', time=5)
     else:
         return await eod(xx, "`Reply to some msg or add their id.`", tome=5)
     name = (await e.client.get_entity(userid)).first_name
@@ -265,7 +265,7 @@ async def _(e):
             try:
                 userid = (await e.client.get_entity(str(e.pattern_match.group(1)))).id
             except ValueError as err:
-                return await eod(xx, f"{str(err)}", time=5)
+                return await eod(xx, f'{err}', time=5)
     else:
         return await eod(xx, "`Reply to some msg or add their id.`", time=5)
     name = (await e.client.get_entity(userid)).first_name
@@ -285,22 +285,22 @@ async def _(e):
 
 @ultroid_bot.on(events.ChatAction)
 async def _(e):
-    if e.user_joined or e.added_by:
-        user = await e.get_user()
-        chat = await e.get_chat()
-        if is_gbanned(str(user.id)):
-            if chat.admin_rights:
-                try:
-                    await e.client.edit_permissions(
-                        chat.id,
-                        user.id,
-                        view_messages=False,
-                    )
-                    gban_watch = f"`Gbanned User` [{user.first_name}](tg://user?id={user.id}) `Spotted\n"
-                    gban_watch += f"Banned Successfully`"
-                    await e.reply(gban_watch)
-                except BaseException:
-                    pass
+    if not e.user_joined and not e.added_by:
+        return
+    user = await e.get_user()
+    chat = await e.get_chat()
+    if is_gbanned(str(user.id)) and chat.admin_rights:
+        try:
+            await e.client.edit_permissions(
+                chat.id,
+                user.id,
+                view_messages=False,
+            )
+            gban_watch = f"`Gbanned User` [{user.first_name}](tg://user?id={user.id}) `Spotted\n"
+            gban_watch += 'Banned Successfully`'
+            await e.reply(gban_watch)
+        except BaseException:
+            pass
 
 
 HELP.update({f"{__name__.split('.')[1]}": f"{__doc__.format(i=HNDLR)}"})

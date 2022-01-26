@@ -34,7 +34,7 @@ async def af(e):
     chat = e.chat_id
     if not (wt and wrd):
         return await eor(e, "`Use this command word to set as filter and reply...`")
-    if wt and wt.media:
+    if wt.media:
         wut = mediainfo(wt.media)
         if wut.startswith(("pic", "gif")):
             dl = await bot.download_media(wt.media)
@@ -43,11 +43,10 @@ async def af(e):
         elif wut == "video":
             if wt.media.document.size > 8 * 1000 * 1000:
                 return await eod(x, "`Unsupported Media`")
-            else:
-                dl = await bot.download_media(wt.media)
-                variable = uf(dl)
-                os.remove(dl)
-                m = "https://telegra.ph" + variable[0]
+            dl = await bot.download_media(wt.media)
+            variable = uf(dl)
+            os.remove(dl)
+            m = "https://telegra.ph" + variable[0]
         else:
             m = pack_bot_file_id(wt.media)
         if wt.text:
@@ -71,8 +70,7 @@ async def rf(e):
 
 @ultroid_cmd(pattern="listfilter$")
 async def lsnote(e):
-    x = list_filter(e.chat_id)
-    if x:
+    if x := list_filter(e.chat_id):
         sd = "Filters Found In This Chats Are\n\n"
         await eor(e, sd + x)
     else:
@@ -83,8 +81,7 @@ async def lsnote(e):
 async def fl(e):
     xx = (e.text).lower()
     chat = e.chat_id
-    x = get_filter(int(chat))
-    if x:
+    if x := get_filter(int(chat)):
         if " " in xx:
             xx = xx.split(" ")
             kk = ""
@@ -98,12 +95,10 @@ async def fl(e):
                 media = k["media"]
                 await e.reply(msg, file=media)
 
-        else:
-            k = get_reply(chat, xx)
-            if k:
-                msg = k["msg"]
-                media = k["media"]
-                await e.reply(msg, file=media)
+        elif k := get_reply(chat, xx):
+            msg = k["msg"]
+            media = k["media"]
+            await e.reply(msg, file=media)
 
 
 HELP.update({f"{__name__.split('.')[1]}": f"{__doc__.format(i=HNDLR)}"})

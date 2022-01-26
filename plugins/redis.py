@@ -113,12 +113,12 @@ async def _(ult):
 async def _(ult):
     ok = await eor(ult, "`Fetching Keys ...`")
     keys = sorted(udB.keys())
-    msg = ""
-    for x in keys:
-        if x.isdigit() or x.startswith("-"):
-            pass
-        else:
-            msg += f"• `{x}`" + "\n"
+    msg = "".join(
+        f"• `{x}`" + "\n"
+        for x in keys
+        if not x.isdigit() and not x.startswith("-")
+    )
+
     await ok.edit(f"**List of Redis Keys :**\n{msg}")
 
 
@@ -128,9 +128,7 @@ async def _(ult):
 async def _(ult):
     ok = await eor(ult, "`Calculating ...`")
     x = 30 * 1024 * 1024
-    z = 0
-    for n in udB.keys():
-        z += udB.memory_usage(n)
+    z = sum(udB.memory_usage(n) for n in udB.keys())
     a = humanbytes(z) + "/" + humanbytes(x)
     b = str(round(z / x * 100, 3)) + "%" + "  Used"
     await ok.edit(f"{a}\n{b}")

@@ -226,8 +226,9 @@ async def kck(ult):
         return await xx.edit("`I don't have the right to kick a user.`")
     except Exception as e:
         return await xx.edit(
-            f"`I don't have the right to kick a user.`\n\n**ERROR**:\n`{str(e)}`",
+            f"`I don't have the right to kick a user.`\n\n**ERROR**:\n`{e}`"
         )
+
     if reason:
         await xx.edit(
             f"[{user.first_name}](tg://user?id={user.id})` was kicked by` [{OWNER_NAME}](tg://user?id={OWNER_ID}) `in {ult.chat.title}`\n**Reason**: `{reason}`",
@@ -249,8 +250,7 @@ async def pin(msg):
     xx = msg.reply_to_msg_id
     tt = msg.text
     try:
-        kk = tt[4]
-        if kk:
+        if kk := tt[4]:
             return
     except BaseException:
         pass
@@ -265,7 +265,7 @@ async def pin(msg):
         except BadRequestError:
             return await x.edit("`Hmm, I'm have no rights here...`")
         except Exception as e:
-            return await x.edit(f"**ERROR:**`{str(e)}`")
+            return await x.edit(f'**ERROR:**`{e}`')
         await x.edit(f"`Pinned` [this message](https://t.me/c/{cht.id}/{xx})!")
     else:
         try:
@@ -273,7 +273,7 @@ async def pin(msg):
         except BadRequestError:
             return await eor(msg, "`Hmm, I'm have no rights here...`")
         except Exception as e:
-            return await eor(msg, f"**ERROR:**`{str(e)}`")
+            return await eor(msg, f'**ERROR:**`{e}`')
         try:
             await msg.delete()
         except BaseException:
@@ -296,14 +296,14 @@ async def unp(ult):
         except BadRequestError:
             return await xx.edit("`Hmm, I'm have no rights here...`")
         except Exception as e:
-            return await xx.edit(f"**ERROR:**\n`{str(e)}`")
+            return await xx.edit(f'**ERROR:**\n`{e}`')
     elif ch == "all":
         try:
             await ultroid_bot.unpin_message(ult.chat_id)
         except BadRequestError:
             return await xx.edit("`Hmm, I'm have no rights here...`")
         except Exception as e:
-            return await xx.edit(f"**ERROR:**`{str(e)}`")
+            return await xx.edit(f'**ERROR:**`{e}`')
     else:
         return await xx.edit(f"Either reply to a message, or, use `{hndlr}unpin all`")
     if not msg and ch != "all":
@@ -322,7 +322,7 @@ async def fastpurger(purg):
         return await eod(purg, "`Reply to a message to purge from.`", time=10)
     async for msg in ultroid_bot.iter_messages(chat, min_id=purg.reply_to_msg_id):
         msgs.append(msg)
-        count = count + 1
+        count += 1
         msgs.append(purg.reply_to_msg_id)
         if len(msgs) == 100:
             await ultroid_bot.delete_messages(chat, msgs)
@@ -357,7 +357,7 @@ async def fastpurgerme(purg):
         min_id=purg.reply_to_msg_id,
     ):
         msgs.append(msg)
-        count = count + 1
+        count += 1
         msgs.append(purg.reply_to_msg_id)
         if len(msgs) == 100:
             await ultroid_bot.delete_messages(chat, msgs)
@@ -378,25 +378,24 @@ async def fastpurgerme(purg):
 )
 async def _(e):
     xx = await eor(e, get_string("com_1"))
-    if e.reply_to_msg_id:
-        input = (await e.get_reply_message()).sender_id
-        name = (await e.client.get_entity(input)).first_name
-        try:
-            nos = 0
-            async for x in e.client.iter_messages(e.chat_id, from_user=input):
-                await e.client.delete_messages(e.chat_id, x)
-                nos += 1
-            await xx.edit(
-                f"**Purged **`{nos}`** msgs of **[{name}](tg://user?id={input})",
-            )
-        except ValueError:
-            return await eod(xx, str(er), time=5)
-    else:
+    if not e.reply_to_msg_id:
         return await eod(
             xx,
             "`Reply to someone's msg to delete.`",
             time=5,
         )
+    input = (await e.get_reply_message()).sender_id
+    name = (await e.client.get_entity(input)).first_name
+    try:
+        nos = 0
+        async for x in e.client.iter_messages(e.chat_id, from_user=input):
+            await e.client.delete_messages(e.chat_id, x)
+            nos += 1
+        await xx.edit(
+            f"**Purged **`{nos}`** msgs of **[{name}](tg://user?id={input})",
+        )
+    except ValueError:
+        return await eod(xx, str(er), time=5)
 
 
 @ultroid_cmd(
@@ -409,11 +408,7 @@ async def delete_it(delme):
             await msg_src.delete()
             await delme.delete()
         except BaseException:
-            await eod(
-                delme,
-                f"Couldn't delete the message.\n\n**ERROR:**\n`{str(e)}`",
-                time=5,
-            )
+            await eod(delme, f"Couldn't delete the message.\n\n**ERROR:**\n`{e}`", time=5)
 
 
 @ultroid_cmd(
@@ -430,7 +425,7 @@ async def editer(edit):
             await message.edit(string)
             await edit.delete()
             break
-        i = i + 1
+        i += 1
 
 
 @ultroid_cmd(pattern="pinned")
@@ -449,7 +444,7 @@ async def get_pinned(event):
         if c == 1:
             return await x.edit(tem, parse_mode="html")
 
-    if tem == "":
+    if not tem:
         return await eod(x, "There is no pinned message in chat!", time=5)
 
 
@@ -471,7 +466,7 @@ async def get_all_pinned(event):
     else:
         m = f"<b>List of pinned message(s) in {chat_name}:</b>\n\n"
 
-    if a == "":
+    if not a:
         return await eod(x, "There is no message pinned in this group!", time=5)
 
     await x.edit(m + a, parse_mode="html")

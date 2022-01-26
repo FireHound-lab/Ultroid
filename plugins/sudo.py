@@ -36,9 +36,8 @@ async def _(ult):
                 return await eod(ult, "`Sudo users can't add new sudos!`", time=10)
         except BaseException:
             pass
-    else:
-        if ult.sender_id != ultroid_bot.uid:
-            return await eod(ult, "`Sudo users can't add new sudos!`", time=10)
+    elif ult.sender_id != ultroid_bot.uid:
+        return await eod(ult, "`Sudo users can't add new sudos!`", time=10)
     ok = await eor(ult, "`Updating SUDO Users List ...`")
     if ult.reply_to_msg_id:
         replied_to = await ult.get_reply_message()
@@ -121,9 +120,8 @@ async def _(ult):
                 )
         except BaseException:
             pass
-    else:
-        if ult.sender_id != ultroid_bot.uid:
-            return await eor(ult, "You are sudo user, You cant add other sudo user.")
+    elif ult.sender_id != ultroid_bot.uid:
+        return await eor(ult, "You are sudo user, You cant add other sudo user.")
     ok = await eor(ult, "`Updating SUDO Users List ...`")
     if ult.reply_to_msg_id:
         replied_to = await ult.get_reply_message()
@@ -210,7 +208,7 @@ async def _(ult):
             msg += f"• [{user.user.first_name}](tg://user?id={i}) ( `{i}` )\n"
         else:
             msg += f"• `{i}` -> Invalid User\n"
-    m = udB.get("SUDO") if udB.get("SUDO") else "False"
+    m = udB.get("SUDO") or "False"
     if m == "False":
         m = "[False](https://telegra.ph/Ultroid-04-06)"
     return await ok.edit(

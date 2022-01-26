@@ -110,17 +110,15 @@ async def _(event):
         a = await event.get_reply_message()
         if not a.message:
             return await xx.edit("`Reply to a message`")
-        else:
-            b = open(input_str, "w")
+        with open(input_str, "w") as b:
             b.write(str(a.message))
-            b.close()
-            await xx.edit(f"**Packing into** `{input_str}`")
-            await asyncio.sleep(2)
-            await xx.edit(f"**Uploading** `{input_str}`")
-            await asyncio.sleep(2)
-            await event.client.send_file(event.chat_id, input_str)
-            await xx.delete()
-            os.remove(input_str)
+        await xx.edit(f"**Packing into** `{input_str}`")
+        await asyncio.sleep(2)
+        await xx.edit(f"**Uploading** `{input_str}`")
+        await asyncio.sleep(2)
+        await event.client.send_file(event.chat_id, input_str)
+        await xx.delete()
+        os.remove(input_str)
 
 
 @ultroid_cmd(
@@ -128,31 +126,28 @@ async def _(event):
 )
 async def _(event):
     xx = await eor(event, get_string("com_1"))
-    if event.reply_to_msg_id:
-        a = await event.get_reply_message()
-        if a.media:
-            b = await a.download_media()
-            c = open(b)
-            d = c.read()
-            c.close()
-            try:
-                await xx.edit(f"```{d}```")
-            except BaseException:
-                key = (
-                    requests.post(
-                        "https://nekobin.com/api/documents", json={"content": d}
-                    )
-                    .json()
-                    .get("result")
-                    .get("key")
-                )
-                await xx.edit(
-                    f"**MESSAGE EXCEEDS TELEGRAM LIMITS**\n\nSo Pasted It On [NEKOBIN](https://nekobin.com/{key})"
-                )
-        else:
-            return await eod(xx, "`Reply to a readable file`", time=5)
-    else:
+    if not event.reply_to_msg_id:
         return await eod(xx, "`Reply to a readable file`", time=5)
+    a = await event.get_reply_message()
+    if not a.media:
+        return await eod(xx, "`Reply to a readable file`", time=5)
+    b = await a.download_media()
+    with open(b) as c:
+        d = c.read()
+    try:
+        await xx.edit(f"```{d}```")
+    except BaseException:
+        key = (
+            requests.post(
+                "https://nekobin.com/api/documents", json={"content": d}
+            )
+            .json()
+            .get("result")
+            .get("key")
+        )
+        await xx.edit(
+            f"**MESSAGE EXCEEDS TELEGRAM LIMITS**\n\nSo Pasted It On [NEKOBIN](https://nekobin.com/{key})"
+        )
 
 
 HELP.update({f"{__name__.split('.')[1]}": f"{__doc__.format(i=HNDLR)}"})

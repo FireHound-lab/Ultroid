@@ -63,7 +63,7 @@ async def _(ult):
                 )
             except Exception as e:
                 Enum += 1
-                Elist += f"{Enum}. {caption_rts}\n- __{str(e)}__\n"
+                Elist += f'{Enum}. {caption_rts}\n- __{e}__\n'
             os.remove(single_file)
     os.remove(dnl)
     await msg.edit(f"**Unzipped `{len(filename)-Enum}/{len(filename)}` Files**")
@@ -76,8 +76,9 @@ async def _(ult):
             await ultroid_bot.send_message(
                 Var.LOG_CHANNEL,
                 "UnzipError.txt",
-                caption=f"`Error Occured on Unzip cmd",
+                caption='`Error Occured on Unzip cmd',
             )
+
             os.remove("UnzipError.txt")
 
 

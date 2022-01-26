@@ -236,10 +236,7 @@ async def rextester(event):
             else:
                 lang = "python3"
                 codee = omk
-            if lang == "php":
-                code = f"<?php {codee} ?>"
-            else:
-                code = codee
+            code = f"<?php {codee} ?>" if lang == "php" else codee
             output = await rexec_aio(lang, code)
             stats = output.stats
             if output.errors is not None:
@@ -402,9 +399,9 @@ async def _(e):
     urd = randrange(1, 3)
     if urd == 1:
         da = "AIzaSyAyDBsY3WRtB5YPC6aB_w8JAy6ZdXNc6FU"
-    if urd == 2:
+    elif urd == 2:
         da = "AIzaSyBF0zxLlYlPMp9xwMQqVKCQRq8DgdrLXsg"
-    if urd == 3:
+    elif urd == 3:
         da = "AIzaSyDdOKnwnPwVIQ_lbH5sYE4FoXjAKIQV0DQ"
     url = f"https://www.googleapis.com/customsearch/v1?key={da}&cx=25b3b50edb928435b&q={quer}&start={start}"
     data = requests.get(url).json()
@@ -465,7 +462,5 @@ async def clip(e):
     bs = BeautifulSoup(html, "html.parser", from_encoding="utf-8")
     resul = bs.find_all("img", "attachment-full size-full")
     buil = e.builder
-    hm = []
-    for res in resul:
-        hm += [buil.photo(include_media=True, file=res["src"])]
+    hm = [buil.photo(include_media=True, file=res["src"]) for res in resul]
     await e.answer(hm, gallery=True)

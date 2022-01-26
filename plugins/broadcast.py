@@ -32,9 +32,8 @@ from . import *
 
 @ultroid_cmd(pattern="add ?(.*)", allow_sudo=False)
 async def broadcast_adder(event):
-    if len(event.text) > 4:
-        if not event.text[4] == " ":  # weird fix
-            return
+    if len(event.text) > 4 and event.text[4] != " ":
+        return
     msgg = event.pattern_match.group(1)
     x = await eor(event, get_string("bd_1"))
     aldone = new = crsh = 0
@@ -47,14 +46,14 @@ async def broadcast_adder(event):
         ]
         for i in chats:
             try:
-                if i.broadcast:
-                    if i.creator or i.admin_rights:
-                        if not is_channel_added(i.id):
-                            new += 1
-                            cid = f"-100{i.id}"
-                            add_channel(int(cid))
-                        else:
-                            pass
+                if (
+                    i.broadcast
+                    and (i.creator or i.admin_rights)
+                    and not is_channel_added(i.id)
+                ):
+                    new += 1
+                    cid = f"-100{i.id}"
+                    add_channel(int(cid))
             except BaseException:
                 pass
         await x.edit(get_string("bd_3").format(get_no_channels(), new))
@@ -79,8 +78,7 @@ async def broadcast_adder(event):
     except BaseException:
         pass
     if not is_channel_added(chat_id):
-        xx = add_channel(chat_id)
-        if xx:
+        if xx := add_channel(chat_id):
             await x.edit(get_string("bd_5"))
         else:
             await x.edit("Error")
@@ -94,9 +92,8 @@ async def broadcast_adder(event):
 
 @ultroid_cmd(pattern="rem ?(.*)", allow_sudo=False)
 async def broadcast_remover(event):
-    if len(event.text) > 4:
-        if not event.text[4] == " ":  # weird fix
-            return
+    if len(event.text) > 4 and event.text[4] != " ":
+        return
     chat_id = event.pattern_match.group(1)
     x = await eor(event, get_string("com_1"))
     if chat_id == "all":
@@ -200,8 +197,6 @@ async def sending(event):
     if not event.is_reply:
         return await x.edit("Reply to a message to broadcast.")
     channels = get_channels()
-    error_count = 0
-    sent_count = 0
     if get_no_channels() == 0:
         return await x.edit(f"Please add channels by using `{hndlr}add` in them.")
     await x.edit("Sending....")
@@ -223,6 +218,8 @@ async def sending(event):
         ):
             await x.edit(f"Not supported. Try `{hndlr}forward`")
             return
+        error_count = 0
+        sent_count = 0
         if not previous_message.web_preview and previous_message.photo:
             file = await ultroid_bot.download_file(previous_message.media)
             uploaded_doc = await ultroid_bot.upload_file(file, file_name="img.png")

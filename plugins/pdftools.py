@@ -125,34 +125,23 @@ async def pdfsetxt(event):
         u, d = msg.split("_")
         dl = await event.client.download_media(ok)
         a = PdfFileReader(dl)
-        str = ""
-        for i in range(int(u) - 1, int(d)):
-            str += a.getPage(i).extractText()
+        str = "".join(a.getPage(i).extractText() for i in range(int(u) - 1, int(d)))
         text = f"{dl.split('.')[0]} {msg}.txt"
-        with open(text, "w") as f:
-            f.write(str)
-        await event.client.send_file(
-            event.chat_id,
-            text,
-            reply_to=event.reply_to_msg_id,
-        )
-        os.remove(text)
-        os.remove(dl)
     else:
         u = int(msg) - 1
         dl = await event.client.download_media(ok)
         a = PdfFileReader(dl)
         str = a.getPage(u).extractText()
         text = f"{dl.split('.')[0]} Pg-{msg}.txt"
-        with open(text, "w") as f:
-            f.write(str)
-        await event.client.send_file(
-            event.chat_id,
-            text,
-            reply_to=event.reply_to_msg_id,
-        )
-        os.remove(text)
-        os.remove(dl)
+    with open(text, "w") as f:
+        f.write(str)
+    await event.client.send_file(
+        event.chat_id,
+        text,
+        reply_to=event.reply_to_msg_id,
+    )
+    os.remove(text)
+    os.remove(dl)
     await xx.delete()
 
 
@@ -175,7 +164,7 @@ async def imgscan(event):
     ratio = image.shape[0] / 500.0
     image = imutils.resize(image, height=500)
     image_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
-    image_y = np.zeros(image_yuv.shape[0:2], np.uint8)
+    image_y = np.zeros(image_yuv.shape[:2], np.uint8)
     image_y[:, :] = image_yuv[:, :, 0]
     image_blurred = cv2.GaussianBlur(image_y, (3, 3), 0)
     edges = cv2.Canny(image_blurred, 50, 200, apertureSize=3)
@@ -232,7 +221,7 @@ async def savepdf(event):
         ratio = image.shape[0] / 500.0
         image = imutils.resize(image, height=500)
         image_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
-        image_y = np.zeros(image_yuv.shape[0:2], np.uint8)
+        image_y = np.zeros(image_yuv.shape[:2], np.uint8)
         image_y[:, :] = image_yuv[:, :, 0]
         image_blurred = cv2.GaussianBlur(image_y, (3, 3), 0)
         edges = cv2.Canny(image_blurred, 50, 200, apertureSize=3)
@@ -291,11 +280,12 @@ async def sendpdf(event):
             "first select pages by replying .pdsave of which u want to make multi page pdf file",
         )
         return
-    msg = event.pattern_match.group(1)
-    if msg:
-        ok = f"{msg}.pdf"
-    else:
-        ok = "My PDF File.pdf"
+    ok = (
+        f"{msg}.pdf"
+        if (msg := event.pattern_match.group(1))
+        else "My PDF File.pdf"
+    )
+
     merger = PdfFileMerger()
     for item in os.listdir("pdf/"):
         if item.endswith("pdf"):

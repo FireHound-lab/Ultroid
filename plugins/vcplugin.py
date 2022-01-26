@@ -64,7 +64,7 @@ async def _(e):
         await e.client(stopvc(await get_call(e)))
         await eor(e, "`Voice Chat Stopped...`")
     except Exception as ex:
-        await eor(e, f"`{str(ex)}`")
+        await eor(e, f'`{ex}`')
 
 
 @ultroid_cmd(
@@ -109,7 +109,7 @@ async def _(e):
         await e.client(startvc(e.chat_id))
         await eor(e, "`Voice Chat Started...`")
     except Exception as ex:
-        await eor(e, f"`{str(ex)}`")
+        await eor(e, f'`{ex}`')
 
 
 @ultroid_cmd(
@@ -160,7 +160,7 @@ async def _(e):
             time=5,
         )
     except Exception as ex:
-        return await eod(xx, f"`{str(ex)}`", time=5)
+        return await eod(xx, f'`{ex}`', time=5)
 
 
 @ultroid_cmd(
@@ -194,7 +194,7 @@ async def _(e):
             time=5,
         )
     except Exception as ex:
-        return await eod(xx, f"`{str(ex)}`", time=5)
+        return await eod(xx, f'`{ex}`', time=5)
 
 
 HELP.update({f"{__name__.split('.')[1]}": f"{__doc__.format(i=HNDLR)}"})

@@ -267,9 +267,7 @@ async def _(event):
         cmd = event.text.split(" ", maxsplit=1)[1]
     except IndexError:
         return await eod(xx, "`No cmd given`", time=10)
-    reply_to_id = event.message.id
-    if event.reply_to_msg_id:
-        reply_to_id = event.reply_to_msg_id
+    reply_to_id = event.reply_to_msg_id or event.message.id
     time.time() + 100
     process = await asyncio.create_subprocess_shell(
         cmd,
@@ -278,17 +276,15 @@ async def _(event):
     )
     stdout, stderr = await process.communicate()
     OUT = f"**☞ BASH\n\n• COMMAND:**\n`{cmd}` \n\n"
-    e = stderr.decode()
-    if e:
+    if e := stderr.decode():
         OUT += f"**• ERROR:** \n`{e}`\n"
     o = stdout.decode()
     if not o:
         o = "Success"
-        OUT += f"**• OUTPUT:**\n`{o}`"
     else:
         _o = o.split("\n")
         o = "\n".join(_o)
-        OUT += f"**• OUTPUT:**\n`{o}`"
+    OUT += f"**• OUTPUT:**\n`{o}`"
     if len(OUT) > 4096:
         ultd = OUT.replace("`", "").replace("*", "").replace("_", "")
         with io.BytesIO(str.encode(ultd)) as out_file:
@@ -373,10 +369,10 @@ async def aexec(code, event):
     e = message = event
     client = event.client
     exec(
-        f"async def __aexec(e, client): "
-        + "\n message = event = e"
-        + "".join(f"\n {l}" for l in code.split("\n")),
+        ('async def __aexec(e, client): ' + "\n message = event = e")
+        + "".join(f"\n {l}" for l in code.split("\n"))
     )
+
 
     return await locals()["__aexec"](e, e.client)
 

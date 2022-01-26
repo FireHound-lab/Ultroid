@@ -32,9 +32,8 @@ from . import *
 
 @ultroid_cmd(pattern="addnote ?(.*)")
 async def an(e):
-    if e.is_group:
-        if not e._chat.admin_rights:
-            return await eod(e, "`You Are Not Admin Here.", time=5)
+    if e.is_group and not e._chat.admin_rights:
+        return await eod(e, "`You Are Not Admin Here.", time=5)
     wrd = (e.pattern_match.group(1)).lower()
     wt = await e.get_reply_message()
     chat = e.chat_id
@@ -52,11 +51,10 @@ async def an(e):
         elif wut == "video":
             if wt.media.document.size > 8 * 1000 * 1000:
                 return await eod(x, "`Unsupported Media`")
-            else:
-                dl = await bot.download_media(wt.media)
-                variable = uf(dl)
-                os.remove(dl)
-                m = "https://telegra.ph" + variable[0]
+            dl = await bot.download_media(wt.media)
+            variable = uf(dl)
+            os.remove(dl)
+            m = "https://telegra.ph" + variable[0]
         else:
             m = pack_bot_file_id(wt.media)
         if wt.text:
@@ -70,9 +68,8 @@ async def an(e):
 
 @ultroid_cmd(pattern="remnote ?(.*)")
 async def rn(e):
-    if e.is_group:
-        if not e._chat.admin_rights:
-            return await eod(e, "`You Are Not Admin Here.", time=5)
+    if e.is_group and not e._chat.admin_rights:
+        return await eod(e, "`You Are Not Admin Here.", time=5)
     wrd = (e.pattern_match.group(1)).lower()
     chat = e.chat_id
     if not wrd:
@@ -85,11 +82,9 @@ async def rn(e):
 
 @ultroid_cmd(pattern="listnote$")
 async def lsnote(e):
-    if e.is_group:
-        if not e._chat.admin_rights:
-            return await eod(e, "`You Are Not Admin Here.", time=5)
-    x = list_note(e.chat_id)
-    if x:
+    if e.is_group and not e._chat.admin_rights:
+        return await eod(e, "`You Are Not Admin Here.", time=5)
+    if x := list_note(e.chat_id):
         sd = "Notes Found In This Chats Are\n\n"
         await eor(e, sd + x)
     else:
@@ -103,12 +98,10 @@ async def notes(e):
         return
     xx = (xx.replace("#", "")).lower()
     chat = e.chat_id
-    x = get_notes(int(chat))
-    if x:
+    if x := get_notes(int(chat)):
         if " " in xx:
             xx = xx.split(" ")[0]
-        k = get_reply(chat, xx)
-        if k:
+        if k := get_reply(chat, xx):
             msg = k["msg"]
             media = k["media"]
             await e.reply(msg, file=media)

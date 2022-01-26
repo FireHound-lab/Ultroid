@@ -31,9 +31,8 @@ from . import *
 
 @ultroid_cmd(pattern="blacklist ?(.*)")
 async def af(e):
-    if e.is_group:
-        if not e._chat.admin_rights:
-            return await eod(e, "`You are Not Admin Here`")
+    if e.is_group and not e._chat.admin_rights:
+        return await eod(e, "`You are Not Admin Here`")
     wrd = (e.pattern_match.group(1)).lower()
     chat = e.chat_id
     if not (wrd):
@@ -45,9 +44,8 @@ async def af(e):
 
 @ultroid_cmd(pattern="remblacklist ?(.*)")
 async def rf(e):
-    if e.is_group:
-        if not e._chat.admin_rights:
-            return await eod(e, "`You are Not Admin Here`")
+    if e.is_group and not e._chat.admin_rights:
+        return await eod(e, "`You are Not Admin Here`")
     wrd = (e.pattern_match.group(1)).lower()
     chat = e.chat_id
     if not wrd:
@@ -58,11 +56,9 @@ async def rf(e):
 
 @ultroid_cmd(pattern="listblacklist")
 async def lsnote(e):
-    if e.is_group:
-        if not e._chat.admin_rights:
-            return await eod(e, "`You are Not Admin Here`")
-    x = list_blacklist(e.chat_id)
-    if x:
+    if e.is_group and not e._chat.admin_rights:
+        return await eod(e, "`You are Not Admin Here`")
+    if x := list_blacklist(e.chat_id):
         sd = "Blacklist Found In This Chats Are\n\n"
         await eor(e, sd + x)
     else:
@@ -87,15 +83,13 @@ async def bl(e):
                     if l.id == e.sender_id:
                         return
                 await e.delete()
-        else:
-            k = re.search(xx, x, flags=re.IGNORECASE)
-            if k:
-                async for l in ultroid_bot.iter_participants(
-                    e.chat_id, filter=ChannelParticipantsAdmins
-                ):
-                    if l.id == e.sender_id:
-                        return
-                await e.delete()
+        elif k := re.search(xx, x, flags=re.IGNORECASE):
+            async for l in ultroid_bot.iter_participants(
+                e.chat_id, filter=ChannelParticipantsAdmins
+            ):
+                if l.id == e.sender_id:
+                    return
+            await e.delete()
 
 
 HELP.update({f"{__name__.split('.')[1]}": f"{__doc__.format(i=HNDLR)}"})

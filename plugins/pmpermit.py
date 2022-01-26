@@ -95,11 +95,10 @@ PMCMDS = [
 async def _(e):
     if not e.is_private:
         return await eod(e, "`Use me in Private.`", time=3)
-    if is_logger(str(e.chat_id)):
-        nolog_user(str(e.chat_id))
-        return await eod(e, "`Now I Will log msgs from here.`", time=3)
-    else:
+    if not is_logger(str(e.chat_id)):
         return await eod(e, "`Wasn logging msgs from here.`", time=3)
+    nolog_user(str(e.chat_id))
+    return await eod(e, "`Now I Will log msgs from here.`", time=3)
 
 
 @ultroid_cmd(
@@ -108,11 +107,10 @@ async def _(e):
 async def _(e):
     if not e.is_private:
         return await eod(e, "`Use me in Private.`", time=3)
-    if not is_logger(str(e.chat_id)):
-        log_user(str(e.chat_id))
-        return await eod(e, "`Now I Won't log msgs from here.`", time=3)
-    else:
+    if is_logger(str(e.chat_id)):
         return await eod(e, "`Wasn't logging msgs from here.`", time=3)
+    log_user(str(e.chat_id))
+    return await eod(e, "`Now I Won't log msgs from here.`", time=3)
 
 
 @ultroid_bot.on(
@@ -183,10 +181,7 @@ if sett == "True" and sett != "False":
         apprv = is_approved(user.id)
         if not apprv and event.text != UND:
             name = user.first_name
-            if user.last_name:
-                fullname = f"{name} {user.last_name}"
-            else:
-                fullname = name
+            fullname = f"{name} {user.last_name}" if user.last_name else name
             username = f"@{user.username}"
             mention = f"[{get_display_name(user)}](tg://user?id={user.id})"
             count = len(get_approved())
@@ -210,62 +205,31 @@ if sett == "True" and sett != "False":
                         search=UNS,
                     ):
                         await message.delete()
-                    await event.client.send_file(
-                        user.id,
-                        PMPIC,
-                        caption=UNAPPROVED_MSG.format(
-                            ON=OWNER_NAME,
-                            warn=wrn,
-                            twarn=WARNS,
-                            UND=UND,
-                            name=name,
-                            fullname=fullname,
-                            username=username,
-                            count=count,
-                            mention=mention,
-                        ),
-                    )
-                elif event.text == prevmsg:
+                else:
                     async for message in event.client.iter_messages(
                         user.id,
                         search=UND,
                     ):
                         await message.delete()
-                    await event.client.send_file(
-                        user.id,
-                        PMPIC,
-                        caption=UNAPPROVED_MSG.format(
-                            ON=OWNER_NAME,
-                            warn=wrn,
-                            twarn=WARNS,
-                            UND=UND,
-                            name=name,
-                            fullname=fullname,
-                            username=username,
-                            count=count,
-                            mention=mention,
-                        ),
-                    )
-                LASTMSG.update({user.id: event.text})
             else:
                 async for message in event.client.iter_messages(user.id, search=UND):
                     await message.delete()
-                await event.client.send_file(
-                    user.id,
-                    PMPIC,
-                    caption=UNAPPROVED_MSG.format(
-                        ON=OWNER_NAME,
-                        warn=wrn,
-                        twarn=WARNS,
-                        UND=UND,
-                        name=name,
-                        fullname=fullname,
-                        username=username,
-                        count=count,
-                        mention=mention,
-                    ),
-                )
-                LASTMSG.update({user.id: event.text})
+            await event.client.send_file(
+                user.id,
+                PMPIC,
+                caption=UNAPPROVED_MSG.format(
+                    ON=OWNER_NAME,
+                    warn=wrn,
+                    twarn=WARNS,
+                    UND=UND,
+                    name=name,
+                    fullname=fullname,
+                    username=username,
+                    count=count,
+                    mention=mention,
+                ),
+            )
+            LASTMSG.update({user.id: event.text})
             if user.id not in COUNT_PM:
                 COUNT_PM.update({user.id: 1})
             else:
@@ -313,11 +277,10 @@ if sett == "True" and sett != "False":
                 approve_user(uid)
                 await apprvpm.edit(f"[{name0}](tg://user?id={uid}) `approved to PM!`")
                 await asyncio.sleep(3)
-                await apprvpm.delete()
             else:
                 await apprvpm.edit("`User may already be approved.`")
                 await asyncio.sleep(5)
-                await apprvpm.delete()
+            await apprvpm.delete()
         elif apprvpm.is_private:
             user = await apprvpm.get_chat()
             aname = await apprvpm.client.get_entity(user.id)
@@ -337,21 +300,15 @@ if sett == "True" and sett != "False":
                 async for message in apprvpm.client.iter_messages(user.id, search=UNS):
                     await message.delete()
                 await asyncio.sleep(3)
-                await apprvpm.delete()
-                if Var.LOG_CHANNEL:
-                    await apprvpm.client.send_message(
-                        Var.LOG_CHANNEL,
-                        f"#APPROVED\nUser: [{name0}](tg://user?id={uid})",
-                    )
             else:
                 await apprvpm.edit("`User may already be approved.`")
                 await asyncio.sleep(5)
-                await apprvpm.delete()
-                if Var.LOG_CHANNEL:
-                    await apprvpm.client.send_message(
-                        Var.LOG_CHANNEL,
-                        f"#APPROVED\nUser: [{name0}](tg://user?id={uid})",
-                    )
+            await apprvpm.delete()
+            if Var.LOG_CHANNEL:
+                await apprvpm.client.send_message(
+                    Var.LOG_CHANNEL,
+                    f"#APPROVED\nUser: [{name0}](tg://user?id={uid})",
+                )
         else:
             await apprvpm.edit(NO_REPLY)
 
@@ -374,14 +331,12 @@ if sett == "True" and sett != "False":
                 await e.edit(
                     f"[{name0}](tg://user?id={replied_user.id}) `Disaproved to PM!`",
                 )
-                await asyncio.sleep(5)
-                await e.delete()
             else:
                 await e.edit(
                     f"[{name0}](tg://user?id={replied_user.id}) was never approved!",
                 )
-                await asyncio.sleep(5)
-                await e.delete()
+            await asyncio.sleep(5)
+            await e.delete()
         elif e.is_private:
             bbb = await e.get_chat()
             aname = await e.client.get_entity(bbb.id)

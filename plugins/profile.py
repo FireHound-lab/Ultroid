@@ -133,15 +133,11 @@ async def remove_profilepic(delpfp):
     pfplist = await ultroid_bot(
         GetUserPhotosRequest(user_id=delpfp.from_id, offset=0, max_id=0, limit=lim),
     )
-    input_photos = []
-    for sep in pfplist.photos:
-        input_photos.append(
-            InputPhoto(
+    input_photos = [InputPhoto(
                 id=sep.id,
                 access_hash=sep.access_hash,
                 file_reference=sep.file_reference,
-            ),
-        )
+            ) for sep in pfplist.photos]
     await ultroid_bot(DeletePhotosRequest(id=input_photos))
     await ok.edit(f"`Successfully deleted {len(input_photos)} profile picture(s).`")
     await asyncio.sleep(10)
@@ -165,7 +161,7 @@ async def gpoto(e):
         await ultroid_bot.send_message(e.chat_id, file=okla)
         os.remove(okla)
     except Exception as er:
-        await eor(e, f"ERROR - {str(er)}")
+        await eor(e, f'ERROR - {er}')
 
 
 HELP.update({f"{__name__.split('.')[1]}": f"{__doc__.format(i=HNDLR)}"})

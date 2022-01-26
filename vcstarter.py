@@ -154,10 +154,7 @@ if vcbot:
                     await ws.close()
                     break
 
-                response = None
-                if data["_"] == "join":
-                    response = await join_call(data["data"])
-
+                response = await join_call(data["data"]) if data["_"] == "join" else None
                 #                if data["_"] == "leave":
                 #                    response = await leave_vc(data["data"])
 

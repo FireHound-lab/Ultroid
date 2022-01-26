@@ -37,41 +37,39 @@ async def download(event):
         ok = await event.get_reply_message()
         if not ok.media:
             return await eod(xx, get_string("udl_1"), time=5)
+        if not kk:
+            d = "resources/downloads/"
+            o = await event.client.download_media(
+                ok,
+                d,
+                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                    progress(
+                        d,
+                        t,
+                        xx,
+                        k,
+                        "Downloading...",
+                    ),
+                ),
+            )
         else:
-            if not kk:
-                d = "resources/downloads/"
-                o = await event.client.download_media(
-                    ok,
-                    d,
-                    progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                        progress(
-                            d,
-                            t,
-                            xx,
-                            k,
-                            "Downloading...",
-                        ),
+            d = f"resources/downloads/{kk}"
+            o = await event.client.download_media(
+                ok,
+                d,
+                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                    progress(
+                        d,
+                        t,
+                        xx,
+                        k,
+                        "Downloading...",
+                        file_name=d,
                     ),
-                )
-            else:
-                d = f"resources/downloads/{kk}"
-                o = await event.client.download_media(
-                    ok,
-                    d,
-                    progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                        progress(
-                            d,
-                            t,
-                            xx,
-                            k,
-                            "Downloading...",
-                            file_name=d,
-                        ),
-                    ),
-                )
+                ),
+            )
     e = datetime.now()
-    t = time_formatter(((e - s).seconds) * 1000)
-    if t:
+    if t := time_formatter(((e - s).seconds) * 1000):
         await eod(xx, get_string("udl_2").format(o, t))
     else:
         await eod(xx, f"Downloaded `{o}` in `0 second(s)`")
@@ -87,33 +85,32 @@ async def download(event):
     tt = time.time()
     if not kk:
         return await eod(xx, get_string("udl_3"))
-    else:
-        try:
-            x = await event.client.send_file(
-                event.chat_id,
-                kk,
-                caption=kk,
-                force_document=True,
-                thumb="resources/extras/logo_rdm.png",
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(
-                        d,
-                        t,
-                        xx,
-                        tt,
-                        "Uploading...",
-                        file_name=kk,
-                    ),
+    try:
+        x = await event.client.send_file(
+            event.chat_id,
+            kk,
+            caption=kk,
+            force_document=True,
+            thumb="resources/extras/logo_rdm.png",
+            progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                progress(
+                    d,
+                    t,
+                    xx,
+                    tt,
+                    "Uploading...",
+                    file_name=kk,
                 ),
-            )
-        except ValueError as ve:
-            return await eod(xx, str(ve))
+            ),
+        )
+    except ValueError as ve:
+        return await eod(xx, str(ve))
+    except BaseException:
+        try:
+            await ultroid_bot.send_message(event.chat_id, kk)
+            return await kk.delete()
         except BaseException:
-            try:
-                await ultroid_bot.send_message(event.chat_id, kk)
-                return await kk.delete()
-            except BaseException:
-                pass
+            pass
     e = datetime.now()
     t = time_formatter(((e - s).seconds) * 1000)
     try:

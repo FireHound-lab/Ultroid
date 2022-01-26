@@ -93,9 +93,10 @@ async def waifu(animu):
         await sticcers[0].click(
             animu.chat_id,
             reply_to=animu.reply_to_msg_id,
-            silent=True if animu.is_reply else False,
+            silent=bool(animu.is_reply),
             hide_via=True,
         )
+
         await xx.delete()
     except ChatSendInlineForbiddenError:
         await xx.edit("`Boss ! I cant use inline things here...`")
@@ -419,9 +420,8 @@ async def ultdestroy(event):
     await event.client.download_media(ult, "ultroid.tgs")
     xx = await eor(event, "`Processing...`")
     os.system("lottie_convert.py ultroid.tgs json.json")
-    json = open("json.json")
-    jsn = json.read()
-    json.close()
+    with open("json.json") as json:
+        jsn = json.read()
     jsn = (
         jsn.replace("[100]", "[200]")
         .replace("[10]", "[40]")
@@ -463,9 +463,8 @@ async def ultiny(event):
     if ik.endswith(".tgs"):
         await event.client.download_media(reply, "ult.tgs")
         os.system("lottie_convert.py ult.tgs json.json")
-        json = open("json.json")
-        jsn = json.read()
-        json.close()
+        with open("json.json") as json:
+            jsn = json.read()
         jsn = jsn.replace("512", "2000")
         open("json.json", "w").write(jsn)
         os.system("lottie_convert.py json.json ult.tgs")
